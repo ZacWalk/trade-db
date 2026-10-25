@@ -1,0 +1,43 @@
+[package]
+name = "tradedb"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT"
+authors = ["Zac Walker"]
+description = "Embedded ACID time-series store for financial market data: copy-on-write B+trees keyed by (symbol, time, seq)"
+repository = "https://github.com/ZacWalk/trade-db"
+homepage = "https://github.com/ZacWalk/trade-db"
+documentation = "https://docs.rs/tradedb"
+readme = "README.md"
+keywords = ["database", "time-series", "embedded", "candles", "market-data"]
+categories = ["database-implementations", "finance"]
+exclude = ["/.github", "/tmp", "/target", "/AGENTS.md", "/deny.toml", "/rust-toolchain.toml"]
+
+[dependencies]
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_Storage_FileSystem", "Win32_System_IO"] }
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+missing_docs = "warn"
+
+[lints.clippy]
+all = "warn"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+debug = "line-tables-only"
+
+# The suite drives tens of thousands of records through crash simulations;
+# unoptimised it is needlessly slow.
+[profile.test]
+opt-level = 2
